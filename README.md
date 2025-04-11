@@ -1,4 +1,4 @@
-# Complete CI/CD DevOps Project Pipeline
+S# Complete CI/CD DevOps Project Pipeline
 
 ## Overview
 
@@ -23,6 +23,9 @@ This project leverages **Docker**, **Kubernetes**, **Helm**, **Terraform**, **Je
 
 ## Project Structure
 
+![image](https://github.com/user-attachments/assets/bfed7f88-6557-4f4b-acb9-eb64b8e9a165)
+
+
 Complete-CICD-DevOps-Project-Pipeline/
 │
 ├── Jenkins-SonarQube/                 # Contains Terraform configurations and installation scripts for Jenkins and SonarQube
@@ -45,3 +48,5 @@ Complete-CICD-DevOps-Project-Pipeline/
 │   └── kubernetes.yaml                # Kubernetes configuration for the project
 │
 ├── Jenkinsfile                        # Jenkins pipeline configuration file for CI/CD process
+
+
