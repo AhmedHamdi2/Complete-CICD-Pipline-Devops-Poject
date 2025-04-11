@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "Complete-CICD-Pipline.fullname" . }}-test-connection"
+  labels:
+    {{- include "Complete-CICD-Pipline.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "Complete-CICD-Pipline.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
