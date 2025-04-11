@@ -1,0 +1,251 @@
+### [A] Let's use Terraform to create an EC2 instance for Jenkins, Docker, and SonarQube
+
+To begin, we will use **Terraform** to provision an EC2 instance for Jenkins, Docker, and SonarQube.  
+The necessary configuration files are located inside the `Jenkins-SonarQube/` directory.  
+The following steps will guide you through the process:
+
+---
+
+#### 1. **Set Up AWS CLI Credentials**
+
+Before you can use Terraform to provision resources in AWS, you need to configure the AWS CLI with your credentials. 
+This will allow Terraform to authenticate and interact with your AWS account.
+
+Run the following command and provide your AWS access key, secret access key, region, and output format when prompted:
+
+```bash
+aws configure
+```
+
+You will be asked to enter:
+
+- **AWS Access Key ID**: Your AWS access key.
+- **AWS Secret Access Key**: Your AWS secret access key.
+- **Default region name**: The region in which to create resources (e.g., `us-east-1`).
+- **Default output format**: The output format (e.g., `json`).
+
+---
+
+#### 2. **Terraform Configuration Files**
+
+In the `Jenkins-SonarQube/` directory, you will find the following files:
+
+- **`main.tf`**: This file contains the Terraform resource configurations for creating the EC2 instances for Jenkins, Docker, and SonarQube.
+  
+- **`provider.tf`**: This file sets up the AWS provider for Terraform to interact with your AWS account and manage resources such as EC2 instances.
+
+- **`install.sh`**: This script installs Jenkins, Docker, and SonarQube on the provisioned EC2 instance once it is created.
+
+---
+
+#### 3. **Initialize Terraform**
+
+Now that your AWS CLI is configured, navigate to the `Jenkins-SonarQube/` directory and initialize Terraform:
+
+```bash
+cd Jenkins-SonarQube
+terraform init
+terraform plan
+terraform apply -auto-approve
+```
+
+Terraform will now provision the EC2 instance(s) based on the settings in `main.tf` and `provider.tf`.
+
+
+#### 4. **Run the Installation Script**
+
+After the EC2 instance is created, SSH into the instance and run the **`install.sh`** script to install Jenkins, Docker, and SonarQube:
+
+```bash
+cd Jenkins-SonarQube
+./install.sh
+```
+
+This script installs and configures Jenkins, Docker, and SonarQube on the EC2 instance.
+
+---
+
+#### 5. **Access Jenkins and SonarQube**
+
+Once the installation is complete, you can access Jenkins and SonarQube by navigating to the public IP of the EC2 instance in your browser:
+
+- Jenkins: `http://<ec2-instance-public-ip>:8080`           -> for testing ( But not recommanded to use public IP)
+- SonarQube: `http://<ec2-instance-public-ip>:9000`         -> for testing 
+
+You can now proceed to configure Jenkins and SonarQube for your CI/CD pipeline.
+
+---
+
+This completes the setup for the EC2 instance that will run Jenkins, Docker, and SonarQube using Terraform and the installation script.
+
+================================================================================================================================================
+[B] Create EC2 Instance and Setup Prometheus & Grafana
+
+1. **Terraform Configuration Files**
+
+In the `Monitoring-server/` directory, you will find the following files:
+
+- **`main.tf`**: Contains the Terraform configuration for provisioning the EC2 instance that will run Prometheus and Grafana.
+  
+- **`provider.tf`**: This file configures the AWS provider for Terraform to interact with AWS services such as EC2 and manage resources.
+
+- **`install.sh`**: This script installs Prometheus and Grafana on the newly created EC2 instance.
+
+---
+
+2. **AWS CLI Configuration**
+
+Before running Terraform, you need to configure AWS CLI to authenticate and access your AWS account. Use the following command to configure your AWS credentials:
+
+```bash
+aws configure
+```
+
+You will be prompted to enter your **AWS Access Key**, **AWS Secret Access Key**, **region**, and **output format**.
+
+---
+
+3. **Navigate to Monitoring-server Directory**
+
+Change to the `Monitoring-server` directory, where the configuration files for Prometheus and Grafana are located:
+
+```bash
+cd Monitoring-server
+terraform init
+terraform plan
+terraform apply -auto-approve
+```
+
+4. **SSH into the EC2 Instance**
+
+After the EC2 instance is created, SSH into it:
+
+```bash
+ssh -i <your-key-pair.pem> ubuntu@<ec2-public-ip>
+```
+
+Replace `<your-key-pair.pem>` with the path to your AWS key pair and `<ec2-public-ip>` with the public IP of the newly created EC2 instance.
+
+---
+
+
+5. **Verify the Installation**
+
+Once the installation is complete, verify that the services are running:
+
+```bash
+sudo systemctl status prometheus
+sudo systemctl status node_exporter
+sudo systemctl status grafana-server
+```
+
+You should see that both Prometheus and Grafana are active and running.
+
+6. Add job for node exporter in prometheus
+$ cd /etc/prometheus/, ls, $ sudo nano prometheus.yml and below the job of prometheus, add job for node exporter
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['IP-Address:9100']
+
+
+7. Check the indentatio of the prometheus config file with below command
+$ promtool check config /etc/prometheus/prometheus.yml
+
+8. Reload the Prometheus configuration
+$ curl -X POST http://localhost:9090/-/reload
+
+9. On monitoring server go to $ cd /etc/prometheus/ & $ sudo nano prometheus.yml and add job for Jenkins
+- job_name: 'jenkins'
+    metrics_path: '/prometheus'
+    static_configs:
+      - targets: ['IP-Address:8080']
+
+
+=================================================================================================================================================
+[C] Create AWS EKS Cluster
+
+1--Install kubectl on Jenkins Server
+ $ sudo apt update
+ $ sudo apt install curl
+ $ curl -LO https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl
+ $ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+ $ kubectl version --client
+
+2--Install AWS Cli
+$ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+$ sudo apt install unzip
+$ unzip awscliv2.zip
+$ sudo ./aws/install
+$ aws --version
+
+3--Installing  eksctl
+$ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+$ cd /tmp
+$ sudo mv /tmp/eksctl /bin
+$ eksctl version
+
+4--Setup Kubernetes using eksctl
+eksctl create cluster --name virtualtechbox-cluster \
+--region ap-south-1 \
+--node-type t2.small \
+--nodes 3 \
+
+5--Verify Cluster with below command
+$ kubectl get nodes
+
+=============================================================================================================================================
+[D] Integrate Prometheus with EKS and Import Grafana Monitoring Dashboard for Kubernetes
+1--Install Helm
+$ sudo snap install helm --classic,    $ helm version
+                    OR
+$ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+$ chmod 700 get_helm.sh
+$ ./get_helm.sh
+$ helm version
+
+
+2--Install Prometheus on EKS
+$ helm repo add stable https://charts.helm.sh/stable          ///We need to add the Helm Stable Charts for our local client
+
+$ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts     ///Add Prometheus Helm repo
+
+$ kubectl create namespace prometheus            ///Create Prometheus namespace
+
+$ helm install stable prometheus-community/kube-prometheus-stack -n prometheus      ///Install Prometheus
+
+$ kubectl get pods -n prometheus          ///To check whether Prometheus is installed
+
+$ kubectl get svc -n prometheus           ///to check the services file (svc) of the Prometheus
+
+
+##let’s expose Prometheus to the external world using LoadBalancer
+$ kubectl edit svc stable-kube-prometheus-sta-prometheus -n prometheus    ///type:LoadBalancer, change port & targetport to 9090, save and close
+
+$ kubectl get svc -n prometheus    //copy dns name of LB and browse with 9090
+
+=============================================================================================================================================
+[E] Set the Trigger and Verify the CI/CD Pipeline
+
+$ git config --global user.name "your.name"
+$ git config --global user.email "your-email-address"
+$ git clone https://github.com/Ashfaque-9x/a-youtube-clone-app.git
+$ cd a-youtube-clone-app
+$ git add .
+$ git commit -m "test change"
+$ git push origin main
+
+=============================================================================================================================================
+[F] The Complete jenkins pipeline script in Jenkinsfile
+
+=============================================================================================================================================
+[G] Cleanup
+
+$ kubectl delete --all pods -n prometheus                   //This command will delete all the pods in prometheus namespace
+$ kubectl delete namespace prometheus
+$ kubectl get all                                           //This command will show the all the deployments, pods & services in default namespace
+$ kubectl delete deployment.apps/virtualtechbox-cluster     //delete deployment in your k8s cluster
+$ kubectl delete service/virtualtechbox-service             //delete service for your deployment of k8s cluster
+$ eksctl delete cluster virtualtechbox-cluster --region ap-south-1     OR    eksctl delete cluster --region=ap-south-1 --name=virtualtechbox-cluster      //This command will delete your EKS cluster
+$ terraform destroy
+
+============================================================================================================================================
