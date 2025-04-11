@@ -1,4 +1,4 @@
-S# Complete CI/CD DevOps Project Pipeline
+# Complete CI/CD DevOps Project Pipeline
 
 ## Overview
 
