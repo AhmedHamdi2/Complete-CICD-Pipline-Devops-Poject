@@ -23,30 +23,28 @@ This project leverages **Docker**, **Kubernetes**, **Helm**, **Terraform**, **Je
 
 ## Project Structure
 
-![image](https://github.com/user-attachments/assets/bfed7f88-6557-4f4b-acb9-eb64b8e9a165)
+![image](https://github.com/user-attachments/assets/13d60d52-6319-4c55-a819-3b8ee5029ba1)
+
 
 
 Complete-CICD-DevOps-Project-Pipeline/
-│
-├── Jenkins-SonarQube/                 # Contains Terraform configurations and installation scripts for Jenkins and SonarQube
-│   ├── main.tf                        # Terraform configuration for Jenkins and SonarQube instances
-│   ├── provider.tf                    # AWS provider setup for Terraform
-│   └── install.sh                     # Script to install Jenkins and SonarQube
-│
-├── Monitoring-server/                 # Contains Terraform configurations and installation scripts for Prometheus and Grafana
-│   ├── main.tf                        # Terraform configuration for Prometheus and Grafana instances
-│   ├── provider.tf                    # AWS provider setup for Terraform
-│   └── install.sh                     # Script to install Prometheus and Grafana
-│
-├── kubernetes/                        # Contains Kubernetes manifests and Helm charts
-│   ├── helm/                          # Helm charts for deploying the frontend app
-│   │   └── frontend/                  # Helm chart directory for frontend deployment
-│   ├── manifests/                     # Kubernetes YAML files for deploying the app
-│   │   ├── frontend.yaml              # Frontend deployment and service
-│   │   ├── backend.yaml               # Backend deployment and service
-│   │   └── monitoring.yaml            # Prometheus and Grafana services
-│   └── kubernetes.yaml                # Kubernetes configuration for the project
-│
-├── Jenkinsfile                        # Jenkins pipeline configuration file for CI/CD process
+├── Jenkins-SonarQube/
+│   ├── main.tf            # Terraform configuration for Jenkins and SonarQube instances
+│   ├── provider.tf        # AWS provider setup for Terraform
+│   └── install.sh         # Script to install Jenkins and SonarQube
+├── Monitoring-server/
+│   ├── main.tf            # Terraform configuration for Prometheus and Grafana instances
+│   ├── provider.tf        # AWS provider setup for Terraform
+│   └── install.sh         # Script to install Prometheus and Grafana
+├── kubernetes/
+│   ├── helm/              # Helm charts for deploying the frontend app
+│   │   └── frontend/      # Helm chart for frontend deployment
+│   ├── manifests/         # Kubernetes YAML files for deploying the app
+│   │   ├── frontend.yaml  # Frontend deployment and service
+│   │   ├── backend.yaml   # Backend deployment and service
+│   │   └── monitoring.yaml # Prometheus and Grafana services
+│   └── kubernetes.yaml    # Kubernetes configuration for the project
+└── Jenkinsfile            # Jenkins pipeline configuration file for CI/CD
+
 
 
