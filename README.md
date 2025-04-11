@@ -11,7 +11,7 @@ This project leverages **Docker**, **Kubernetes**, **Helm**, **Terraform**, **Je
 ## Tools Used
 
 - **Docker**: Used to containerize the web application, ensuring consistency across environments.
-- **Kubernetes (Minikube)**: Manages the containerized applications for scalable and resilient deployments.
+- **Kubernetes**: Manages the containerized applications for scalable and resilient deployments.
 - **Helm**: Simplifies the deployment and management of applications in Kubernetes.
 - **Terraform**: Automates infrastructure provisioning and management using Infrastructure as Code (IaC).
 - **Jenkins**: Used to automate the CI/CD pipeline for building, testing, and deploying the web application.
