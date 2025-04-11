@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "Complete-CICD-Pipline.fullname" . }}
+  labels:
+    {{- include "Complete-CICD-Pipline.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "Complete-CICD-Pipline.selectorLabels" . | nindent 4 }}
